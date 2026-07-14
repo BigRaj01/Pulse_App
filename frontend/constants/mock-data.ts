@@ -1,0 +1,120 @@
+import { Song, Album, Artist } from "@/types";
+
+export const MOCK_ARTISTS: Artist[] = [
+  {
+    id: "artist-1",
+    name: "Nova Reyes",
+    avatarUrl: "/placeholder/artist-1.jpg",
+    bio: "Electronic artist blending synthwave with ambient textures.",
+    followers: 128400,
+  },
+  {
+    id: "artist-2",
+    name: "Marcus Vale",
+    avatarUrl: "/placeholder/artist-2.jpg",
+    bio: "Indie producer known for cinematic soundscapes.",
+    followers: 84200,
+  },
+  {
+    id: "artist-3",
+    name: "Aria Chen",
+    avatarUrl: "/placeholder/artist-3.jpg",
+    bio: "Vocalist and songwriter mixing dream pop with R&B.",
+    followers: 201500,
+  },
+];
+
+export const MOCK_ALBUMS: Album[] = [
+  {
+    id: "album-1",
+    title: "Neon Tides",
+    artist: "Nova Reyes",
+    artistId: "artist-1",
+    coverUrl: "/placeholder/album-1.jpg",
+    releaseYear: 2024,
+    genre: "Electronic",
+  },
+  {
+    id: "album-2",
+    title: "Afterglow",
+    artist: "Marcus Vale",
+    artistId: "artist-2",
+    coverUrl: "/placeholder/album-2.jpg",
+    releaseYear: 2023,
+    genre: "Indie",
+  },
+  {
+    id: "album-3",
+    title: "Velvet Hours",
+    artist: "Aria Chen",
+    artistId: "artist-3",
+    coverUrl: "/placeholder/album-3.jpg",
+    releaseYear: 2024,
+    genre: "R&B",
+  },
+];
+
+export const MOCK_SONGS: Song[] = [
+  {
+    id: "song-1",
+    title: "Lily Way",
+    artist: "Nova Reyes",
+    artistId: "artist-1",
+    album: "Neon Tides",
+    albumId: "album-1",
+    genre: "Electronic",
+    coverUrl: "/placeholder/album-1.jpg",
+    duration: 214,
+    streamUrl: "/mock-audio/lily-way.mp3",
+  },
+  {
+    id: "song-2",
+    title: "Boom Blast",
+    artist: "Marcus Vale",
+    artistId: "artist-2",
+    album: "Afterglow",
+    albumId: "album-2",
+    genre: "Indie",
+    coverUrl: "/placeholder/album-2.jpg",
+    duration: 198,
+    streamUrl: "/mock-audio/boom-blast.mp3",
+  },
+  {
+    id: "song-3",
+    title: "Crystal Waves",
+    artist: "Aria Chen",
+    artistId: "artist-3",
+    album: "Velvet Hours",
+    albumId: "album-3",
+    genre: "R&B",
+    coverUrl: "/placeholder/album-3.jpg",
+    duration: 241,
+    streamUrl: "/mock-audio/crystal-waves.mp3",
+  },
+  {
+    id: "song-4",
+    title: "Golden Rain",
+    artist: "Nova Reyes",
+    artistId: "artist-1",
+    album: "Neon Tides",
+    albumId: "album-1",
+    genre: "Electronic",
+    coverUrl: "/placeholder/album-1.jpg",
+    duration: 187,
+    streamUrl: "/mock-audio/golden-rain.mp3",
+  },
+  {
+    id: "song-5",
+    title: "Echo Pulse",
+    artist: "Marcus Vale",
+    artistId: "artist-2",
+    album: "Afterglow",
+    albumId: "album-2",
+    genre: "Indie",
+    coverUrl: "/placeholder/album-2.jpg",
+    duration: 226,
+    streamUrl: "/mock-audio/echo-pulse.mp3",
+  },
+];
+
+export const GENRES = ["Electronic", "Indie", "R&B", "Pop", "Hip-Hop", "Ambient"];
