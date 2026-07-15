@@ -6,6 +6,8 @@ type EngineCallbacks = {
 };
 
 const NOTE_FREQUENCIES: Record<string, number> = {
+  G3: 196.0,
+  "A#3": 233.08,
   C4: 261.63,
   D4: 293.66,
   E4: 329.63,
@@ -21,12 +23,50 @@ const NOTE_FREQUENCIES: Record<string, number> = {
   A5: 880.0,
 };
 
-const SCALES: string[][] = [
-  ["C4", "D4", "E4", "G4", "A4", "C5", "A4", "G4"],
-  ["A4", "C5", "D5", "E5", "D5", "C5", "A4", "G4"],
-  ["E4", "G4", "A4", "B4", "D5", "B4", "A4", "G4"],
-  ["G4", "A4", "B4", "D5", "E5", "D5", "B4", "A4"],
-];
+interface GenrePreset {
+  pattern: string[];
+  waveform: OscillatorType;
+  noteDuration: number;
+}
+
+const GENRE_PRESETS: Record<string, GenrePreset> = {
+  Electronic: {
+    pattern: ["C4", "E4", "G4", "C5", "G4", "E4", "D4", "G4"],
+    waveform: "sawtooth",
+    noteDuration: 0.22,
+  },
+  Indie: {
+    pattern: ["A4", "C5", "E5", "D5", "C5", "A4", "G4", "A4"],
+    waveform: "triangle",
+    noteDuration: 0.35,
+  },
+  "R&B": {
+    pattern: ["D4", "F4", "A4", "C5", "A4", "F4", "D4", "C4"],
+    waveform: "sine",
+    noteDuration: 0.5,
+  },
+  Pop: {
+    pattern: ["E4", "G4", "B4", "E5", "D5", "B4", "G4", "E4"],
+    waveform: "square",
+    noteDuration: 0.28,
+  },
+  "Hip-Hop": {
+    pattern: ["G3", "G3", "A#3", "C4", "D4", "C4", "A#3", "G3"],
+    waveform: "sawtooth",
+    noteDuration: 0.4,
+  },
+  Ambient: {
+    pattern: ["C4", "E4", "G4", "B4", "C5", "B4", "G4", "E4"],
+    waveform: "sine",
+    noteDuration: 0.7,
+  },
+};
+
+const DEFAULT_PRESET: GenrePreset = {
+  pattern: ["C4", "D4", "E4", "G4", "A4", "C5", "A4", "G4"],
+  waveform: "sine",
+  noteDuration: 0.4,
+};
 
 function hashString(value: string) {
   let hash = 0;
@@ -44,7 +84,8 @@ class SynthEngine {
   private nextNoteTime = 0;
   private noteIndex = 0;
   private pattern: string[] = [];
-  private readonly noteDuration = 0.4;
+  private waveform: OscillatorType = "sine";
+  private noteDuration = 0.4;
   private startedAt = 0;
   private offsetSeconds = 0;
   private duration = 0;
@@ -60,9 +101,18 @@ class SynthEngine {
     return this.ctx;
   }
 
-  load(songId: string, duration: number, callbacks: EngineCallbacks) {
+  load(songId: string, duration: number, genre: string, callbacks: EngineCallbacks) {
     this.stopSchedulers();
-    this.pattern = SCALES[hashString(songId) % SCALES.length];
+    const preset = GENRE_PRESETS[genre] ?? DEFAULT_PRESET;
+    // Two songs in the same genre still get a slightly different starting note order,
+    // so back-to-back plays of the same genre don't sound identical.
+    const rotation = hashString(songId) % preset.pattern.length;
+    this.pattern = [
+      ...preset.pattern.slice(rotation),
+      ...preset.pattern.slice(0, rotation),
+    ];
+    this.waveform = preset.waveform;
+    this.noteDuration = preset.noteDuration;
     this.duration = duration;
     this.offsetSeconds = 0;
     this.callbacks = callbacks;
@@ -133,7 +183,7 @@ class SynthEngine {
     const freq = NOTE_FREQUENCIES[note] ?? 440;
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
-    osc.type = "sine";
+    osc.type = this.waveform;
     osc.frequency.value = freq;
     gain.gain.setValueAtTime(0, time);
     gain.gain.linearRampToValueAtTime(1, time + 0.02);

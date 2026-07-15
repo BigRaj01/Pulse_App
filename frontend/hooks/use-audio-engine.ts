@@ -26,7 +26,7 @@ export function useAudioEngine() {
   // Load and auto-start a new song whenever it changes
   useEffect(() => {
     if (!currentSong) return;
-    synthEngine.load(currentSong.id, currentSong.duration, {
+    synthEngine.load(currentSong.id, currentSong.duration, currentSong.genre, {
       onProgress: setProgress,
       onEnded: () => {
         if (repeatRef.current === "one") {
