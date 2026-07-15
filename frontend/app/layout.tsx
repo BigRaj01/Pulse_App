@@ -9,6 +9,7 @@ import { MiniPlayer } from "@/components/features/mini-player";
 import { Toaster } from "@/components/ui/sonner";
 import { PageTransition } from "@/components/layout/page-transition";
 import { AudioEngineProvider } from "@/components/features/audio-engine-provider";
+import { AuthGuard } from "@/components/features/auth-guard";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -41,7 +42,9 @@ export default function RootLayout({
             <div className="flex flex-1 flex-col min-w-0">
               <Navbar />
               <main className="flex-1 pb-20 md:pb-0">
-                <PageTransition>{children}</PageTransition>
+                <PageTransition>
+                  <AuthGuard>{children}</AuthGuard>
+                </PageTransition>
               </main>
             </div>
           </div>
