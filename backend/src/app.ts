@@ -5,7 +5,16 @@ import walletRoutes from "./routes/wallet.routes";
 
 export const app = express();
 
-app.use(cors({ origin: env.APP_URL }));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      const allowed =
+        origin === env.APP_URL || origin.endsWith(".vercel.app");
+      callback(allowed ? null : new Error("Not allowed by CORS"), allowed);
+    },
+  })
+);
 app.use(express.json());
 
 app.get("/health", (_req, res) => {
