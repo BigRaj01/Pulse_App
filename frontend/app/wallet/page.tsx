@@ -11,11 +11,13 @@ export default function WalletPage() {
   const { data: wallet, isLoading: walletLoading, isFetching } = useQuery({
     queryKey: ["wallet"],
     queryFn: walletService.getWallet,
+    refetchInterval: 8000,
   });
 
   const { data: transactions, isLoading: txLoading } = useQuery({
     queryKey: ["transactions"],
     queryFn: walletService.getTransactions,
+    refetchInterval: 8000,
   });
 
   function handleRefresh() {
