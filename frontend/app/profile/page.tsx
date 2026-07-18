@@ -33,11 +33,14 @@ export default function ProfilePage() {
           </h1>
           <p className="text-sm text-muted-foreground">Pulse member</p>
         </div>
+        <Link
+          href="/settings"
+          className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+        >
+          <Settings className="h-5 w-5" />
+        </Link>
         <Button variant="ghost" size="icon">
-          <Settings className="h-5 w-5" />
-        </Button>
-       <Button variant="ghost" size="icon" render={<Link href="/settings" />}>
-          <Settings className="h-5 w-5" />
+          <LogOut className="h-5 w-5" />
         </Button>
       </div>
 
