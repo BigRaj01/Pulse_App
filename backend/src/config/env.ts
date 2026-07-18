@@ -8,6 +8,7 @@ const envSchema = z.object({
   CIRCLE_ENTITY_SECRET: z.string().min(1, "CIRCLE_ENTITY_SECRET is required"),
   CIRCLE_WALLET_ID: z.string().min(1, "CIRCLE_WALLET_ID is required"),
   CIRCLE_USDC_TOKEN_ID: z.string().min(1, "CIRCLE_USDC_TOKEN_ID is required"),
+  STREAM_SETTLEMENT_CONTRACT_ADDRESS: z.string().min(1, "STREAM_SETTLEMENT_CONTRACT_ADDRESS is required"),
 });
 
 const parsed = envSchema.safeParse(process.env);
