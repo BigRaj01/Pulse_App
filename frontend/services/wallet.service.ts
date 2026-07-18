@@ -20,8 +20,10 @@ interface CircleTransaction {
   id: string;
   transactionType: "INBOUND" | "OUTBOUND";
   state: string;
+  operation?: string;
   destinationAddress?: string;
   sourceAddress?: string;
+  contractAddress?: string;
   amounts: string[];
   createDate: string;
 }
@@ -69,16 +71,20 @@ export const walletService = {
 
   getTransactions: async (): Promise<Transaction[]> => {
     const res = await apiClient.get<CircleTransactionsResponse>("/wallet/transactions");
-    return res.data.transactions.map((tx) => ({
-      id: tx.id,
-      type: mapTransactionType(tx.transactionType),
-      amount: tx.amounts.length > 0 ? parseFloat(tx.amounts[0]) : 0,
-      status: mapTransactionStatus(tx.state),
-      counterparty:
-        tx.transactionType === "INBOUND"
+    return res.data.transactions.map((tx) => {
+      const isContractCall = tx.operation === "CONTRACT_EXECUTION";
+      return {
+        id: tx.id,
+        type: mapTransactionType(tx.transactionType),
+        amount: tx.amounts.length > 0 ? parseFloat(tx.amounts[0]) : 0,
+        status: mapTransactionStatus(tx.state),
+        counterparty: isContractCall
+          ? "On-chain settlement log"
+          : tx.transactionType === "INBOUND"
           ? tx.sourceAddress ?? "Unknown"
           : tx.destinationAddress ?? "Unknown",
-      timestamp: tx.createDate,
-    }));
+        timestamp: tx.createDate,
+      };
+    });
   },
 };
