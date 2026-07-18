@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { usePlayerStore } from "@/store/player-store";
 import { synthEngine } from "@/lib/synth-engine";
 import { streamService } from "@/services/stream.service";
+import { toast } from "sonner";
 
 // Placeholder artist payout address — same test wallet used for manual testing.
 const ARTIST_PAYOUT_ADDRESS = "0x60467c58C4359816b5e42c74C1d10F4980a31921";
@@ -42,7 +43,15 @@ export function useAudioEngine() {
           paidSongIdsRef.current.add(currentSong.id);
           streamService
             .sendPlayEvent(currentSong.id, ARTIST_PAYOUT_ADDRESS, seconds)
-            .catch((err) => console.error("Stream payment failed:", err));
+            .then((result) => {
+              if (result?.paid) {
+                toast.success("Artist payment sent for this stream");
+              }
+            })
+            .catch((err) => {
+              console.error("Stream payment failed:", err);
+              toast.error("Streaming payment couldn't be sent — backend may be waking up, try again shortly");
+            });
         }
       },
       onEnded: () => {
