@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import { env } from "./config/env";
 import walletRoutes from "./routes/wallet.routes";
+import streamRoutes from "./routes/stream.routes";
 
 export const app = express();
 
@@ -22,6 +23,7 @@ app.get("/health", (_req, res) => {
 });
 
 app.use("/wallet", walletRoutes);
+app.use("/stream", streamRoutes);
 
 // Global error handler — catches anything thrown in routes/services
 app.use(

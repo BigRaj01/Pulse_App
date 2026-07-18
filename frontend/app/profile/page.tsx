@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { LogOut, Settings } from "lucide-react";
 import { userService } from "@/services/user.service";
+import Link from "next/link";
 import { SongCard } from "@/components/features/song-card";
 import { SongCardSkeleton } from "@/components/features/song-card-skeleton";
 import { CoverImage } from "@/components/features/cover-image";
@@ -35,8 +36,8 @@ export default function ProfilePage() {
         <Button variant="ghost" size="icon">
           <Settings className="h-5 w-5" />
         </Button>
-        <Button variant="ghost" size="icon">
-          <LogOut className="h-5 w-5" />
+       <Button variant="ghost" size="icon" render={<Link href="/settings" />}>
+          <Settings className="h-5 w-5" />
         </Button>
       </div>
 

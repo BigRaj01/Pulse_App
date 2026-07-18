@@ -3,6 +3,11 @@
 import { useEffect, useRef } from "react";
 import { usePlayerStore } from "@/store/player-store";
 import { synthEngine } from "@/lib/synth-engine";
+import { streamService } from "@/services/stream.service";
+
+// Placeholder artist payout address — same test wallet used for manual testing.
+const ARTIST_PAYOUT_ADDRESS = "0x60467c58C4359816b5e42c74C1d10F4980a31921";
+const PAYMENT_TRIGGER_SECONDS = 5;
 
 export function useAudioEngine() {
   const currentSong = usePlayerStore((s) => s.currentSong);
@@ -14,6 +19,7 @@ export function useAudioEngine() {
 
   const repeatRef = useRef(repeat);
   const playNextRef = useRef(playNext);
+  const paidSongIdsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     repeatRef.current = repeat;
@@ -23,11 +29,22 @@ export function useAudioEngine() {
     playNextRef.current = playNext;
   }, [playNext]);
 
-  // Load and auto-start a new song whenever it changes
+ // Load and auto-start a new song whenever it changes
   useEffect(() => {
     if (!currentSong) return;
     synthEngine.load(currentSong.id, currentSong.duration, currentSong.genre, {
-      onProgress: setProgress,
+      onProgress: (seconds) => {
+        setProgress(seconds);
+        if (
+          seconds >= PAYMENT_TRIGGER_SECONDS &&
+          !paidSongIdsRef.current.has(currentSong.id)
+        ) {
+          paidSongIdsRef.current.add(currentSong.id);
+          streamService
+            .sendPlayEvent(currentSong.id, ARTIST_PAYOUT_ADDRESS, seconds)
+            .catch((err) => console.error("Stream payment failed:", err));
+        }
+      },
       onEnded: () => {
         if (repeatRef.current === "one") {
           synthEngine.play(0);

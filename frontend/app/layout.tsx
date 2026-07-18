@@ -10,6 +10,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { PageTransition } from "@/components/layout/page-transition";
 import { AudioEngineProvider } from "@/components/features/audio-engine-provider";
 import { AuthGuard } from "@/components/features/auth-guard";
+import { ThemeSync } from "@/components/features/theme-sync";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -33,8 +34,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`dark ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+    
 <body className="min-h-full flex flex-col">
         <Providers>
           <div className="flex min-h-screen">
@@ -48,7 +50,8 @@ export default function RootLayout({
               </main>
             </div>
           </div>
-        <AudioEngineProvider />
+        <ThemeSync />
+          <AudioEngineProvider />
           <MiniPlayer />
           <BottomNav />
           <Toaster theme="dark" position="bottom-right" />

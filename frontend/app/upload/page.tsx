@@ -193,8 +193,16 @@ export default function UploadPage() {
           </div>
         )}
 
-        <Button type="submit" disabled={isUploading} className="w-full">
-          {isUploading ? "Uploading..." : "Upload Track"}
+        <Button
+          type="submit"
+          disabled={isUploading || !coverImage || !audioFile}
+          className="w-full"
+        >
+          {isUploading
+            ? "Uploading..."
+            : !coverImage || !audioFile
+            ? "Attach cover image and audio file to continue"
+            : "Upload Track"}
         </Button>
       </form>
     </div>
