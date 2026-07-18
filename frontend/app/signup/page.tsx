@@ -9,13 +9,14 @@ import { Button } from "@/components/ui/button";
 export default function SignupPage() {
   const router = useRouter();
   const login = useAuthStore((s) => s.login);
+ const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     // Placeholder auth: any email/password is accepted, nothing is persisted.
-    login(email);
+    login(email, name);
     router.push("/");
   }
 
@@ -26,6 +27,15 @@ export default function SignupPage() {
         className="w-full max-w-sm flex flex-col gap-4 rounded-2xl bg-card/50 p-8"
       >
         <h1 className="text-2xl font-bold text-center mb-2">Create your account</h1>
+        <div>
+          <label className="text-sm font-medium mb-2 block">Name</label>
+          <Input
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Your name"
+          />
+        </div>
         <div>
           <label className="text-sm font-medium mb-2 block">Email</label>
           <Input
