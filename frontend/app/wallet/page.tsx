@@ -1,18 +1,18 @@
 "use client";
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { walletService } from "@/services/wallet.service";
-import { WalletCard } from "@/components/features/wallet-card";
 import { TransactionList } from "@/components/features/transaction-list";
 import { WalletConnect } from "@/components/features/wallet-connect";
 import { useState, useEffect } from "react";
 import { getUsdcBalance } from "@/lib/usdc-balance";
 import { useAuthStore } from "@/store/auth-store";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function WalletPage() {
-  const queryClient = useQueryClient();
   const connectedWalletAddress = useAuthStore((s) => s.walletAddress);
   const [connectedBalance, setConnectedBalance] = useState<number | null>(null);
+  const [balanceVisible, setBalanceVisible] = useState(true);
 
   useEffect(() => {
     if (!connectedWalletAddress) {
@@ -39,21 +39,11 @@ export default function WalletPage() {
     };
   }, [connectedWalletAddress]);
 
-  const { data: wallet, isLoading: walletLoading, isFetching } = useQuery({
-    queryKey: ["wallet"],
-    queryFn: walletService.getWallet,
-    refetchInterval: 8000,
-  });
-
   const { data: transactions, isLoading: txLoading } = useQuery({
     queryKey: ["transactions"],
     queryFn: walletService.getTransactions,
     refetchInterval: 8000,
   });
-
-  function handleRefresh() {
-    queryClient.invalidateQueries({ queryKey: ["wallet"] });
-  }
 
   return (
     <div className="pb-24 px-4 md:px-6 pt-8 max-w-2xl mx-auto">
@@ -67,20 +57,32 @@ export default function WalletPage() {
 
       {connectedWalletAddress && (
         <div className="rounded-2xl bg-gradient-to-br from-accent/20 to-primary/10 border border-border p-6 mb-6">
-          <p className="text-sm font-medium text-muted-foreground mb-2">
-            Your Connected Wallet Balance
-          </p>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-medium text-muted-foreground">
+              Your Connected Wallet Balance
+            </p>
+            <button
+              onClick={() => setBalanceVisible(!balanceVisible)}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              {balanceVisible ? (
+                <Eye className="h-4 w-4" />
+              ) : (
+                <EyeOff className="h-4 w-4" />
+              )}
+            </button>
+          </div>
           <p className="text-3xl font-bold">
-            {connectedBalance !== null ? `$${connectedBalance.toFixed(4)}` : "Loading..."}
-            <span className="text-sm text-muted-foreground ml-2">USDC</span>
+            {!balanceVisible
+              ? "••••••"
+              : connectedBalance !== null
+              ? `$${connectedBalance.toFixed(4)}`
+              : "Loading..."}
+            {balanceVisible && (
+              <span className="text-sm text-muted-foreground ml-2">USDC</span>
+            )}
           </p>
         </div>
-      )}
-
-      {walletLoading || !wallet ? (
-        <div className="h-48 rounded-2xl bg-card/50 animate-pulse" />
-      ) : (
-        <WalletCard wallet={wallet} onRefresh={handleRefresh} isRefreshing={isFetching} />
       )}
 
       <h2 className="text-xl font-bold mt-8 mb-4">Recent Transactions</h2>
