@@ -5,9 +5,39 @@ import { walletService } from "@/services/wallet.service";
 import { WalletCard } from "@/components/features/wallet-card";
 import { TransactionList } from "@/components/features/transaction-list";
 import { WalletConnect } from "@/components/features/wallet-connect";
+import { useState, useEffect } from "react";
+import { getUsdcBalance } from "@/lib/usdc-balance";
+import { useAuthStore } from "@/store/auth-store";
 
 export default function WalletPage() {
   const queryClient = useQueryClient();
+  const connectedWalletAddress = useAuthStore((s) => s.walletAddress);
+  const [connectedBalance, setConnectedBalance] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!connectedWalletAddress) {
+      setConnectedBalance(null);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function fetchBalance(address: string) {
+      try {
+        const balance = await getUsdcBalance(address);
+        if (!cancelled) setConnectedBalance(balance);
+      } catch (err) {
+        console.error("Failed to fetch connected wallet balance:", err);
+      }
+    }
+
+    fetchBalance(connectedWalletAddress);
+    const interval = setInterval(() => fetchBalance(connectedWalletAddress), 8000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [connectedWalletAddress]);
 
   const { data: wallet, isLoading: walletLoading, isFetching } = useQuery({
     queryKey: ["wallet"],
@@ -34,6 +64,18 @@ export default function WalletPage() {
       <div className="mb-6">
         <WalletConnect />
       </div>
+
+      {connectedWalletAddress && (
+        <div className="rounded-2xl bg-gradient-to-br from-accent/20 to-primary/10 border border-border p-6 mb-6">
+          <p className="text-sm font-medium text-muted-foreground mb-2">
+            Your Connected Wallet Balance
+          </p>
+          <p className="text-3xl font-bold">
+            {connectedBalance !== null ? `$${connectedBalance.toFixed(4)}` : "Loading..."}
+            <span className="text-sm text-muted-foreground ml-2">USDC</span>
+          </p>
+        </div>
+      )}
 
       {walletLoading || !wallet ? (
         <div className="h-48 rounded-2xl bg-card/50 animate-pulse" />
