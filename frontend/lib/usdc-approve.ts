@@ -17,7 +17,11 @@ export async function approveUsdcSpending(
   spenderAddress: string,
   amountUsdc: number
 ): Promise<string> {
+  console.log("approveUsdcSpending called with:", { ownerAddress, spenderAddress, amountUsdc });
+
   if (!window.ethereum) throw new Error("No wallet provider found");
+  if (!ownerAddress) throw new Error("Missing owner address");
+  if (!spenderAddress) throw new Error("Missing spender address (check NEXT_PUBLIC_DEV_WALLET_ADDRESS)");
 
   const amountInSmallestUnit = BigInt(Math.round(amountUsdc * 10 ** USDC_DECIMALS));
   const data = encodeApprove(spenderAddress, amountInSmallestUnit);
