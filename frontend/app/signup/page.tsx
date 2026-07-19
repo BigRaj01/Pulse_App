@@ -19,7 +19,7 @@ export default function SignupPage() {
     setError("");
     const result = signup(email, password, name);
     if (result.success) {
-      router.push("/");
+      router.push("/connect-wallet");
     } else {
       setError(result.error ?? "Signup failed.");
     }

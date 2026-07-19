@@ -18,7 +18,7 @@ export default function LoginPage() {
     setError("");
     const result = login(email, password);
     if (result.success) {
-      router.push("/");
+      router.push("/connect-wallet");
     } else {
       setError(result.error ?? "Login failed.");
     }
