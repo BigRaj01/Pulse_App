@@ -11,11 +11,17 @@ export default function LoginPage() {
   const login = useAuthStore((s) => s.login);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    login(email);
-    router.push("/");
+    setError("");
+    const result = login(email, password);
+    if (result.success) {
+      router.push("/");
+    } else {
+      setError(result.error ?? "Login failed.");
+    }
   }
 
   return (
@@ -45,6 +51,7 @@ export default function LoginPage() {
             placeholder="••••••••"
           />
         </div>
+        {error && <p className="text-sm text-destructive text-center">{error}</p>}
         <Button type="submit" className="w-full mt-2">
           Log In
         </Button>
