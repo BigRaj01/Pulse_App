@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Wallet, Check, ShieldCheck } from "lucide-react";
+import { Wallet, Check, ShieldCheck, X } from "lucide-react";
 import { useAuthStore } from "@/store/auth-store";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -62,6 +62,13 @@ export function WalletConnect() {
         <div className="flex items-center gap-2 rounded-xl bg-accent/10 text-accent px-4 py-2 text-sm font-medium">
           <Check className="h-4 w-4" />
           Connected: {short}
+          <button
+            onClick={() => setWalletAddress(null)}
+            className="ml-1 hover:text-foreground"
+            title="Disconnect"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
         </div>
         {walletApproved ? (
           <div className="flex items-center gap-2 rounded-xl bg-primary/10 text-primary px-4 py-2 text-sm font-medium">
