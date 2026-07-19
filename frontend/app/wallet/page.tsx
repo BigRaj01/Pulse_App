@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { walletService } from "@/services/wallet.service";
 import { WalletCard } from "@/components/features/wallet-card";
 import { TransactionList } from "@/components/features/transaction-list";
+import { WalletConnect } from "@/components/features/wallet-connect";
 
 export default function WalletPage() {
   const queryClient = useQueryClient();
@@ -26,7 +27,13 @@ export default function WalletPage() {
 
   return (
     <div className="pb-24 px-4 md:px-6 pt-8 max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Wallet</h1>
+      <h1 className="text-3xl font-bold mb-2">Wallet</h1>
+      <p className="text-sm text-muted-foreground mb-4">
+        Connect your own USDC wallet to enable autonomous streaming payments.
+      </p>
+      <div className="mb-6">
+        <WalletConnect />
+      </div>
 
       {walletLoading || !wallet ? (
         <div className="h-48 rounded-2xl bg-card/50 animate-pulse" />
