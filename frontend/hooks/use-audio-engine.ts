@@ -40,7 +40,6 @@ const repeatRef = useRef(repeat);
       onProgress: (seconds) => {
         setProgress(seconds);
         if (
-          if (
           seconds >= PAYMENT_TRIGGER_SECONDS &&
           !paidSongIdsRef.current.has(currentSong.id) &&
           walletAddress &&
