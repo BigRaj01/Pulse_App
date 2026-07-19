@@ -8,16 +8,21 @@ import { Button } from "@/components/ui/button";
 
 export default function SignupPage() {
   const router = useRouter();
-  const login = useAuthStore((s) => s.login);
- const [name, setName] = useState("");
+  const signup = useAuthStore((s) => s.signup);
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // Placeholder auth: any email/password is accepted, nothing is persisted.
-    login(email, name);
-    router.push("/");
+    setError("");
+    const result = signup(email, password, name);
+    if (result.success) {
+      router.push("/");
+    } else {
+      setError(result.error ?? "Signup failed.");
+    }
   }
 
   return (
@@ -56,6 +61,7 @@ export default function SignupPage() {
             placeholder="••••••••"
           />
         </div>
+        {error && <p className="text-sm text-destructive text-center">{error}</p>}
         <Button type="submit" className="w-full mt-2">
           Sign Up
         </Button>
