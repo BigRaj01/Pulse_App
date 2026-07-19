@@ -48,8 +48,9 @@ export function WalletConnect() {
       await approveUsdcSpending(walletAddress, DEV_WALLET_ADDRESS, APPROVAL_LIMIT_USDC);
       setWalletApproved(true);
       toast.success(`Authorized up to $${APPROVAL_LIMIT_USDC} in autonomous streaming payments`);
-    } catch {
-      toast.error("Authorization was cancelled or failed.");
+    } catch (err) {
+      console.error("Approval error:", err);
+      toast.error(err instanceof Error ? err.message : "Authorization was cancelled or failed.");
     } finally {
       setApproving(false);
     }
