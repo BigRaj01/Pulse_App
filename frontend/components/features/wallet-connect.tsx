@@ -6,6 +6,7 @@ import { useAuthStore } from "@/store/auth-store";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { approveUsdcSpending } from "@/lib/usdc-approve";
+import { ensureArcNetwork } from "@/lib/arc-network";
 
 const DEV_WALLET_ADDRESS = process.env.NEXT_PUBLIC_DEV_WALLET_ADDRESS!;
 const APPROVAL_LIMIT_USDC = 50; // authorize up to $50 total in autonomous charges
@@ -29,6 +30,7 @@ export function WalletConnect() {
       const accounts = (await window.ethereum.request({
         method: "eth_requestAccounts",
       })) as string[];
+      await ensureArcNetwork();
 
       if (accounts && accounts.length > 0) {
         setWalletAddress(accounts[0]);

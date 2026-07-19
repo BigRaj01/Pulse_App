@@ -1,3 +1,5 @@
+import { ensureArcNetwork } from "./arc-network";
+
 const USDC_CONTRACT_ADDRESS = "0x3600000000000000000000000000000000000000";
 const USDC_DECIMALS = 6;
 const APPROVE_SELECTOR = "0x095ea7b3"; // keccak256("approve(address,uint256)")
@@ -17,11 +19,11 @@ export async function approveUsdcSpending(
   spenderAddress: string,
   amountUsdc: number
 ): Promise<string> {
-  console.log("approveUsdcSpending called with:", { ownerAddress, spenderAddress, amountUsdc });
-
   if (!window.ethereum) throw new Error("No wallet provider found");
   if (!ownerAddress) throw new Error("Missing owner address");
   if (!spenderAddress) throw new Error("Missing spender address (check NEXT_PUBLIC_DEV_WALLET_ADDRESS)");
+
+  await ensureArcNetwork();
 
   const amountInSmallestUnit = BigInt(Math.round(amountUsdc * 10 ** USDC_DECIMALS));
   const data = encodeApprove(spenderAddress, amountInSmallestUnit);
