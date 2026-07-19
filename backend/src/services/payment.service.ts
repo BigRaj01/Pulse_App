@@ -16,6 +16,21 @@ export const paymentService = {
     });
     return response.data;
   },
+async chargeListenerWallet(listenerAddress: string, amountUsdc: string) {
+    const amountInSmallestUnit = Math.round(parseFloat(amountUsdc) * 1_000_000).toString();
+
+    const response = await circleClient.createContractExecutionTransaction({
+      walletId: env.CIRCLE_WALLET_ID,
+      contractAddress: env.USDC_CONTRACT_ADDRESS,
+      abiFunctionSignature: "transferFrom(address,address,uint256)",
+      abiParameters: [listenerAddress, env.DEV_WALLET_ADDRESS, amountInSmallestUnit],
+      fee: {
+        type: "level",
+        config: { feeLevel: "MEDIUM" },
+      },
+    });
+    return response.data;
+  },
 
   async recordStreamOnChain(
     songId: string,

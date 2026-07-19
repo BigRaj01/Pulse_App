@@ -9,28 +9,25 @@ export async function handleStreamEvent(
   next: NextFunction
 ) {
   try {
-    const { songId, artistAddress, secondsListened } = req.body;
+   const { songId, artistAddress, listenerAddress, secondsListened } = req.body;
     const decision = agentService.decide(secondsListened);
 
     if (!decision.shouldPay) {
       return res.json({ paid: false, reason: decision.reason });
     }
 
-    const transaction = await paymentService.sendUsdc(
-      artistAddress,
-      decision.amount,
-      `stream-${songId}-${Date.now()}`
+    // Charge the listener's connected wallet directly, using their one-time USDC approval.
+    const transaction = await paymentService.chargeListenerWallet(
+      listenerAddress,
+      decision.amount
     );
 
-    // Log this settlement on-chain via the StreamSettlement contract.
-    // We use the wallet's own address as a placeholder "listener" address since
-    // we don't yet have per-user wallet addresses — this records that a stream
-    // was settled, even though it doesn't yet attribute it to a specific listener wallet.
+    // Log this settlement on-chain via the StreamSettlement contract, now with the real listener.
     let onChainRecord = null;
     try {
       onChainRecord = await paymentService.recordStreamOnChain(
         songId,
-        artistAddress, // placeholder: using artist address for listener too, until per-user wallets exist
+        listenerAddress,
         artistAddress,
         decision.amount
       );
