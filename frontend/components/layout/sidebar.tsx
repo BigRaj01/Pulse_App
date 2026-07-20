@@ -18,7 +18,8 @@ export function Sidebar() {
 
   return (
     <aside className="hidden md:flex md:flex-col md:w-60 md:shrink-0 border-r border-border bg-card/50 backdrop-blur-xl h-screen sticky top-0 px-4 py-6">
-      <div className="mb-8 px-2">
+      <div className="mb-8 px-2 flex items-center gap-2">
+        <img src="/logo.svg" alt="Pulse" className="h-7 w-7" />
         <span className="text-xl font-bold tracking-tight">Pulse</span>
       </div>
       <nav className="flex flex-col gap-1">

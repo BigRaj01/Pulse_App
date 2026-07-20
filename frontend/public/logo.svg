@@ -1,0 +1,11 @@
+<svg width="300" height="300" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="pulseGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5B8CFF"/>
+      <stop offset="100%" stop-color="#2AE6A8"/>
+    </linearGradient>
+  </defs>
+  <circle cx="150" cy="150" r="140" fill="url(#pulseGrad)"/>
+  <polyline points="80,150 115,150 135,90 150,210 175,100 195,150 220,150"
+    fill="none" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
