@@ -10,7 +10,7 @@ export async function handleStreamEvent(
 ) {
   try {
    const { songId, artistAddress, listenerAddress, secondsListened } = req.body;
-    const decision = agentService.decide(secondsListened);
+    const decision = agentService.decide(listenerAddress, secondsListened);
 
     if (!decision.shouldPay) {
       return res.json({ paid: false, reason: decision.reason });

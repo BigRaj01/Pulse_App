@@ -6,7 +6,7 @@ export const streamService = {
     artistAddress: string,
     listenerAddress: string,
     secondsListened: number
-  ) => {
+  ): Promise<{ paid: boolean; amount?: string; reason?: string }> => {
     const res = await apiClient.post("/stream/event", {
       songId,
       artistAddress,

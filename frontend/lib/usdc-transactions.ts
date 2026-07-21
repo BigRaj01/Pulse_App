@@ -46,15 +46,22 @@ async function getBlockTimestamp(blockNumber: string): Promise<number> {
   return timestamp;
 }
 
+const MAX_BLOCK_LOOKBACK = 50_000;
+
 export async function getUsdcTransferHistory(address: string): Promise<Transaction[]> {
   const addressTopic = padAddressTopic(address);
+
+  const latestBlockHex = await rpcCall("eth_blockNumber", []);
+  const latestBlock = parseInt(latestBlockHex, 16);
+  const fromBlock = Math.max(0, latestBlock - MAX_BLOCK_LOOKBACK);
+  const fromBlockHex = "0x" + fromBlock.toString(16);
 
   const [outgoing, incoming] = await Promise.all([
     rpcCall("eth_getLogs", [
       {
         address: USDC_CONTRACT_ADDRESS,
         topics: [TRANSFER_TOPIC, addressTopic],
-        fromBlock: "0x0",
+        fromBlock: fromBlockHex,
         toBlock: "latest",
       },
     ]) as Promise<RawLog[]>,
@@ -62,7 +69,7 @@ export async function getUsdcTransferHistory(address: string): Promise<Transacti
       {
         address: USDC_CONTRACT_ADDRESS,
         topics: [TRANSFER_TOPIC, null, addressTopic],
-        fromBlock: "0x0",
+        fromBlock: fromBlockHex,
         toBlock: "latest",
       },
     ]) as Promise<RawLog[]>,

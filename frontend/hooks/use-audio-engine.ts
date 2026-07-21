@@ -21,7 +21,8 @@ export function useAudioEngine() {
 
 const repeatRef = useRef(repeat);
   const playNextRef = useRef(playNext);
-  const paidSongIdsRef = useRef<Set<string>>(new Set());
+  const lastChargedAtRef = useRef<Map<string, number>>(new Map());
+  const REPLAY_COOLDOWN_MS = 45_000; // a song can be charged again after 45s of not being charged
   const walletAddress = useAuthStore((s) => s.walletAddress);
   const walletApproved = useAuthStore((s) => s.walletApproved);
 
@@ -39,18 +40,24 @@ const repeatRef = useRef(repeat);
     synthEngine.load(currentSong.id, currentSong.duration, currentSong.genre, {
       onProgress: (seconds) => {
         setProgress(seconds);
+        const now = Date.now();
+        const lastCharged = lastChargedAtRef.current.get(currentSong.id) ?? 0;
+        const cooldownElapsed = now - lastCharged >= REPLAY_COOLDOWN_MS;
+
         if (
           seconds >= PAYMENT_TRIGGER_SECONDS &&
-          !paidSongIdsRef.current.has(currentSong.id) &&
+          cooldownElapsed &&
           walletAddress &&
           walletApproved
         ) {
-          paidSongIdsRef.current.add(currentSong.id);
+          lastChargedAtRef.current.set(currentSong.id, now);
           streamService
             .sendPlayEvent(currentSong.id, ARTIST_PAYOUT_ADDRESS, walletAddress, seconds)
             .then((result) => {
               if (result?.paid) {
-                toast.success("Artist payment sent for this stream");
+                toast.success(`Charged $${result.amount} — ${result.reason}`);
+              } else if (result?.reason) {
+                toast.info(result.reason);
               }
             })
             .catch((err) => {
