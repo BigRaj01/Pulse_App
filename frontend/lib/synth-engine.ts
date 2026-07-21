@@ -6,7 +6,9 @@ type EngineCallbacks = {
 };
 
 const NOTE_FREQUENCIES: Record<string, number> = {
+  E3: 164.81,
   G3: 196.0,
+  A3: 220.0,
   "A#3": 233.08,
   C4: 261.63,
   D4: 293.66,
@@ -24,46 +26,72 @@ const NOTE_FREQUENCIES: Record<string, number> = {
 };
 
 interface GenrePreset {
-  pattern: string[];
+  patterns: string[][];
+  bass: string[];
   waveform: OscillatorType;
   noteDuration: number;
 }
 
 const GENRE_PRESETS: Record<string, GenrePreset> = {
   Electronic: {
-    pattern: ["C4", "E4", "G4", "C5", "G4", "E4", "D4", "G4"],
+    patterns: [
+      ["C4", "E4", "G4", "C5", "G4", "E4", "D4", "G4"],
+      ["E4", "G4", "B4", "E5", "D5", "B4", "G4", "D4"],
+    ],
+    bass: ["E3", "G3"],
     waveform: "sawtooth",
     noteDuration: 0.22,
   },
   Indie: {
-    pattern: ["A4", "C5", "E5", "D5", "C5", "A4", "G4", "A4"],
+    patterns: [
+      ["A4", "C5", "E5", "D5", "C5", "A4", "G4", "A4"],
+      ["D4", "F4", "A4", "G4", "F4", "D4", "C4", "D4"],
+    ],
+    bass: ["A3", "D4"],
     waveform: "triangle",
     noteDuration: 0.35,
   },
   "R&B": {
-    pattern: ["D4", "F4", "A4", "C5", "A4", "F4", "D4", "C4"],
+    patterns: [
+      ["D4", "F4", "A4", "C5", "A4", "F4", "D4", "C4"],
+      ["G4", "A#3", "D4", "F4", "D4", "A#3", "G3", "D4"],
+    ],
+    bass: ["D4", "A3"],
     waveform: "sine",
     noteDuration: 0.5,
   },
   Pop: {
-    pattern: ["E4", "G4", "B4", "E5", "D5", "B4", "G4", "E4"],
+    patterns: [
+      ["E4", "G4", "B4", "E5", "D5", "B4", "G4", "E4"],
+      ["C4", "E4", "G4", "C5", "B4", "G4", "E4", "C4"],
+    ],
+    bass: ["C4", "G3"],
     waveform: "square",
     noteDuration: 0.28,
   },
   "Hip-Hop": {
-    pattern: ["G3", "G3", "A#3", "C4", "D4", "C4", "A#3", "G3"],
+    patterns: [
+      ["G3", "G3", "A#3", "C4", "D4", "C4", "A#3", "G3"],
+      ["E3", "G3", "A3", "C4", "A3", "G3", "E3", "G3"],
+    ],
+    bass: ["G3", "E3"],
     waveform: "sawtooth",
     noteDuration: 0.4,
   },
   Ambient: {
-    pattern: ["C4", "E4", "G4", "B4", "C5", "B4", "G4", "E4"],
+    patterns: [
+      ["C4", "E4", "G4", "B4", "C5", "B4", "G4", "E4"],
+      ["A3", "C4", "E4", "A4", "G4", "E4", "C4", "A3"],
+    ],
+    bass: ["A3", "E3"],
     waveform: "sine",
     noteDuration: 0.7,
   },
 };
 
 const DEFAULT_PRESET: GenrePreset = {
-  pattern: ["C4", "D4", "E4", "G4", "A4", "C5", "A4", "G4"],
+  patterns: [["C4", "D4", "E4", "G4", "A4", "C5", "A4", "G4"]],
+  bass: ["C4"],
   waveform: "sine",
   noteDuration: 0.4,
 };
@@ -84,6 +112,7 @@ class SynthEngine {
   private nextNoteTime = 0;
   private noteIndex = 0;
   private pattern: string[] = [];
+  private bass: string[] = [];
   private waveform: OscillatorType = "sine";
   private noteDuration = 0.4;
   private startedAt = 0;
@@ -104,13 +133,12 @@ class SynthEngine {
   load(songId: string, duration: number, genre: string, callbacks: EngineCallbacks) {
     this.stopSchedulers();
     const preset = GENRE_PRESETS[genre] ?? DEFAULT_PRESET;
-    // Two songs in the same genre still get a slightly different starting note order,
-    // so back-to-back plays of the same genre don't sound identical.
-    const rotation = hashString(songId) % preset.pattern.length;
-    this.pattern = [
-      ...preset.pattern.slice(rotation),
-      ...preset.pattern.slice(0, rotation),
-    ];
+    const hash = hashString(songId);
+
+    const variant = preset.patterns[hash % preset.patterns.length];
+    const rotation = hash % variant.length;
+    this.pattern = [...variant.slice(rotation), ...variant.slice(0, rotation)];
+    this.bass = preset.bass;
     this.waveform = preset.waveform;
     this.noteDuration = preset.noteDuration;
     this.duration = duration;
@@ -172,26 +200,37 @@ class SynthEngine {
   private scheduler() {
     if (!this.ctx) return;
     while (this.nextNoteTime < this.ctx.currentTime + 0.2) {
-      this.playNote(this.pattern[this.noteIndex % this.pattern.length], this.nextNoteTime);
+      const barPosition = this.noteIndex % this.pattern.length;
+      this.playNote(this.pattern[barPosition], this.nextNoteTime, "lead");
+
+      if (barPosition % 4 === 0) {
+        const bassNote = this.bass[Math.floor(this.noteIndex / 4) % this.bass.length];
+        this.playNote(bassNote, this.nextNoteTime, "bass");
+      }
+
       this.nextNoteTime += this.noteDuration;
       this.noteIndex++;
     }
   }
 
-  private playNote(note: string, time: number) {
+  private playNote(note: string, time: number, voice: "lead" | "bass") {
     if (!this.ctx || !this.masterGain) return;
     const freq = NOTE_FREQUENCIES[note] ?? 440;
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
-    osc.type = this.waveform;
-    osc.frequency.value = freq;
+    osc.type = voice === "bass" ? "sine" : this.waveform;
+    osc.frequency.value = voice === "bass" ? freq / 2 : freq;
+
+    const peak = voice === "bass" ? 0.5 : 1;
+    const noteLen = voice === "bass" ? this.noteDuration * 4 : this.noteDuration;
+
     gain.gain.setValueAtTime(0, time);
-    gain.gain.linearRampToValueAtTime(1, time + 0.02);
-    gain.gain.linearRampToValueAtTime(0, time + this.noteDuration * 0.9);
+    gain.gain.linearRampToValueAtTime(peak, time + 0.02);
+    gain.gain.linearRampToValueAtTime(0, time + noteLen * 0.9);
     osc.connect(gain);
     gain.connect(this.masterGain);
     osc.start(time);
-    osc.stop(time + this.noteDuration);
+    osc.stop(time + noteLen);
   }
 
   private tickProgress() {

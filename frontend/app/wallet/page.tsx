@@ -1,11 +1,11 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { walletService } from "@/services/wallet.service";
 import { TransactionList } from "@/components/features/transaction-list";
 import { WalletConnect } from "@/components/features/wallet-connect";
 import { useState, useEffect } from "react";
 import { getUsdcBalance } from "@/lib/usdc-balance";
+import { getUsdcTransferHistory } from "@/lib/usdc-transactions";
 import { useAuthStore } from "@/store/auth-store";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -40,8 +40,9 @@ export default function WalletPage() {
   }, [connectedWalletAddress]);
 
   const { data: transactions, isLoading: txLoading } = useQuery({
-    queryKey: ["transactions"],
-    queryFn: walletService.getTransactions,
+    queryKey: ["connected-wallet-transactions", connectedWalletAddress],
+    queryFn: () => getUsdcTransferHistory(connectedWalletAddress!),
+    enabled: !!connectedWalletAddress,
     refetchInterval: 8000,
   });
 
@@ -85,14 +86,20 @@ export default function WalletPage() {
         </div>
       )}
 
-      <h2 className="text-xl font-bold mt-8 mb-4">Recent Transactions</h2>
+      <h2 className="text-xl font-bold mt-8 mb-4">Your Transactions</h2>
 
-      {txLoading || !transactions ? (
+      {!connectedWalletAddress ? (
+        <p className="text-sm text-muted-foreground">
+          Connect your wallet to see your own transaction history.
+        </p>
+      ) : txLoading || !transactions ? (
         <div className="flex flex-col gap-2">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="h-16 rounded-xl bg-card/50 animate-pulse" />
           ))}
         </div>
+      ) : transactions.length === 0 ? (
+        <p className="text-sm text-muted-foreground">No transactions yet.</p>
       ) : (
         <TransactionList transactions={transactions} />
       )}
