@@ -45,6 +45,7 @@ export default function WalletPage() {
     queryFn: () => getUsdcTransferHistory(connectedWalletAddress!),
     enabled: !!connectedWalletAddress,
     refetchInterval: 20000,
+    retry: false,
   });
 
   return (

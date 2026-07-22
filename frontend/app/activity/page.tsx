@@ -24,6 +24,7 @@ export default function ActivityLogPage() {
     queryFn: () => agentActivityService.getLog(walletAddress!),
     enabled: !!walletAddress,
     refetchInterval: 15000,
+    retry: false,
   });
 
   return (
