@@ -80,23 +80,22 @@ export async function getUsdcTransferHistory(address: string): Promise<Transacti
     ...incoming.map((log) => ({ log, type: "incoming" as const })),
   ];
 
-  const transactions = await Promise.all(
-    allLogs.map(async ({ log, type }) => {
-      const amountRaw = BigInt(log.data);
-      const amount = Number(amountRaw) / 10 ** USDC_DECIMALS;
-      const counterpartyTopic = type === "outgoing" ? log.topics[2] : log.topics[1];
-      const timestamp = await getBlockTimestamp(log.blockNumber);
+  const transactions = [];
+  for (const { log, type } of allLogs) {
+    const amountRaw = BigInt(log.data);
+    const amount = Number(amountRaw) / 10 ** USDC_DECIMALS;
+    const counterpartyTopic = type === "outgoing" ? log.topics[2] : log.topics[1];
+    const timestamp = await getBlockTimestamp(log.blockNumber);
 
-      return {
-        id: log.transactionHash,
-        type,
-        amount,
-        status: "completed" as const,
-        counterparty: topicToAddress(counterpartyTopic),
-        timestamp: new Date(timestamp).toISOString(),
-      };
-    })
-  );
+    transactions.push({
+      id: log.transactionHash,
+      type,
+      amount,
+      status: "completed" as const,
+      counterparty: topicToAddress(counterpartyTopic),
+      timestamp: new Date(timestamp).toISOString(),
+    });
+  }
 
   return transactions.sort(
     (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()

@@ -33,7 +33,7 @@ export default function WalletPage() {
     }
 
     fetchBalance(connectedWalletAddress);
-    const interval = setInterval(() => fetchBalance(connectedWalletAddress), 8000);
+    const interval = setInterval(() => fetchBalance(connectedWalletAddress), 20000);
     return () => {
       cancelled = true;
       clearInterval(interval);
@@ -44,7 +44,7 @@ export default function WalletPage() {
     queryKey: ["connected-wallet-transactions", connectedWalletAddress],
     queryFn: () => getUsdcTransferHistory(connectedWalletAddress!),
     enabled: !!connectedWalletAddress,
-    refetchInterval: 8000,
+    refetchInterval: 20000,
   });
 
   return (
