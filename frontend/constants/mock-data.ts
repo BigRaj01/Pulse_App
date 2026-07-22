@@ -54,6 +54,8 @@ export const MOCK_ALBUMS: Album[] = [
   },
 ];
 
+const TEST_ARTIST_WALLET = "0x60467c58C4359816b5e42c74C1d10F4980a31921";
+
 export const MOCK_SONGS: Song[] = [
   {
     id: "song-1",
@@ -66,6 +68,7 @@ export const MOCK_SONGS: Song[] = [
     coverUrl: "/placeholder/album-1.jpg",
     duration: 214,
     streamUrl: "/mock-audio/lily-way.mp3",
+    artistWalletAddress: TEST_ARTIST_WALLET,
   },
   {
     id: "song-2",
@@ -78,6 +81,7 @@ export const MOCK_SONGS: Song[] = [
     coverUrl: "/placeholder/album-2.jpg",
     duration: 198,
     streamUrl: "/mock-audio/boom-blast.mp3",
+    artistWalletAddress: TEST_ARTIST_WALLET,
   },
   {
     id: "song-3",
@@ -90,6 +94,7 @@ export const MOCK_SONGS: Song[] = [
     coverUrl: "/placeholder/album-3.jpg",
     duration: 241,
     streamUrl: "/mock-audio/crystal-waves.mp3",
+    artistWalletAddress: TEST_ARTIST_WALLET,
   },
   {
     id: "song-4",
@@ -102,6 +107,7 @@ export const MOCK_SONGS: Song[] = [
     coverUrl: "/placeholder/album-1.jpg",
     duration: 187,
     streamUrl: "/mock-audio/golden-rain.mp3",
+    artistWalletAddress: TEST_ARTIST_WALLET,
   },
   {
     id: "song-5",
@@ -114,6 +120,7 @@ export const MOCK_SONGS: Song[] = [
     coverUrl: "/placeholder/album-2.jpg",
     duration: 226,
     streamUrl: "/mock-audio/echo-pulse.mp3",
+    artistWalletAddress: TEST_ARTIST_WALLET,
   },
   {
     id: "song-6",
@@ -126,6 +133,7 @@ export const MOCK_SONGS: Song[] = [
     coverUrl: "/placeholder/album-3.jpg",
     duration: 233,
     streamUrl: "/mock-audio/midnight-bloom.mp3",
+    artistWalletAddress: TEST_ARTIST_WALLET,
   },
   {
     id: "song-7",
@@ -138,6 +146,7 @@ export const MOCK_SONGS: Song[] = [
     coverUrl: "/placeholder/album-1.jpg",
     duration: 205,
     streamUrl: "/mock-audio/solar-drift.mp3",
+    artistWalletAddress: TEST_ARTIST_WALLET,
   },
   {
     id: "song-8",
@@ -150,6 +159,7 @@ export const MOCK_SONGS: Song[] = [
     coverUrl: "/placeholder/album-2.jpg",
     duration: 191,
     streamUrl: "/mock-audio/velvet-skyline.mp3",
+    artistWalletAddress: TEST_ARTIST_WALLET,
   },
   {
     id: "song-9",
@@ -162,6 +172,7 @@ export const MOCK_SONGS: Song[] = [
     coverUrl: "/placeholder/album-3.jpg",
     duration: 258,
     streamUrl: "/mock-audio/amber-nights.mp3",
+    artistWalletAddress: TEST_ARTIST_WALLET,
   },
   {
     id: "song-10",
@@ -174,6 +185,7 @@ export const MOCK_SONGS: Song[] = [
     coverUrl: "/placeholder/album-1.jpg",
     duration: 212,
     streamUrl: "/mock-audio/concrete-bloom.mp3",
+    artistWalletAddress: TEST_ARTIST_WALLET,
   },
 ];
 

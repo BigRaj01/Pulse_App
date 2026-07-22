@@ -8,7 +8,6 @@ import { toast } from "sonner";
 import { useAuthStore } from "@/store/auth-store";
 
 // Placeholder artist payout address — same test wallet used for manual testing.
-const ARTIST_PAYOUT_ADDRESS = "0x60467c58C4359816b5e42c74C1d10F4980a31921";
 const PAYMENT_TRIGGER_SECONDS = 5;
 
 export function useAudioEngine() {
@@ -52,7 +51,7 @@ const repeatRef = useRef(repeat);
         ) {
           lastChargedAtRef.current.set(currentSong.id, now);
           streamService
-            .sendPlayEvent(currentSong.id, ARTIST_PAYOUT_ADDRESS, walletAddress, seconds)
+            .sendPlayEvent(currentSong.id, currentSong.artistWalletAddress, walletAddress, seconds)
             .then((result) => {
               if (result?.paid) {
                 toast.success(`Charged $${result.amount} — ${result.reason}`);

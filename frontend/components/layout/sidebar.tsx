@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Search, Upload, Wallet, User } from "lucide-react";
+import { Home, Search, Upload, Wallet, User, Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { href: "/discover", label: "Discover", icon: Search },
   { href: "/upload", label: "Upload", icon: Upload },
   { href: "/wallet", label: "Wallet", icon: Wallet },
+  { href: "/activity", label: "Agent Activity", icon: Activity },
   { href: "/profile", label: "Profile", icon: User },
 ];
 

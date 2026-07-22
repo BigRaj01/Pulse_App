@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { TransactionList } from "@/components/features/transaction-list";
 import { WalletConnect } from "@/components/features/wallet-connect";
@@ -86,7 +87,12 @@ export default function WalletPage() {
         </div>
       )}
 
-      <h2 className="text-xl font-bold mt-8 mb-4">Your Transactions</h2>
+      <div className="flex items-center justify-between mt-8 mb-4">
+        <h2 className="text-xl font-bold">Your Transactions</h2>
+        <Link href="/activity" className="text-sm text-primary hover:underline">
+          Why was I charged? →
+        </Link>
+      </div>
 
       {!connectedWalletAddress ? (
         <p className="text-sm text-muted-foreground">

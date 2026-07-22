@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { agentService } from "../services/agent.service";
+import { agentService, getActivityLog } from "../services/agent.service";
 import { paymentService } from "../services/payment.service";
 import { StreamEventInput } from "../validators/stream.validator";
 
@@ -10,7 +10,7 @@ export async function handleStreamEvent(
 ) {
   try {
    const { songId, artistAddress, listenerAddress, secondsListened } = req.body;
-    const decision = agentService.decide(listenerAddress, secondsListened);
+    const decision = agentService.decide(listenerAddress, songId, secondsListened);
 
     if (!decision.shouldPay) {
       return res.json({ paid: false, reason: decision.reason });
@@ -42,6 +42,15 @@ export async function handleStreamEvent(
       transaction,
       onChainRecord,
     });
+  } catch (err) {
+    next(err);
+  }
+}
+export async function getActivityLogHandler(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { listenerAddress } = req.query;
+    const log = getActivityLog(typeof listenerAddress === "string" ? listenerAddress : undefined);
+    res.json({ log });
   } catch (err) {
     next(err);
   }

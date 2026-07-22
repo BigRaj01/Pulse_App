@@ -27,6 +27,7 @@ export interface Song {
   coverUrl: string;
   duration: number; // seconds
   streamUrl: string;
+  artistWalletAddress: string;
 }
 
 export interface Playlist {
