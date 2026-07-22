@@ -1,14 +1,11 @@
 "use client";
 
-import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
-import { TransactionList } from "@/components/features/transaction-list";
 import { WalletConnect } from "@/components/features/wallet-connect";
 import { useState, useEffect } from "react";
 import { getUsdcBalance } from "@/lib/usdc-balance";
-import { getUsdcTransferHistory } from "@/lib/usdc-transactions";
 import { useAuthStore } from "@/store/auth-store";
 import { Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
 
 export default function WalletPage() {
   const connectedWalletAddress = useAuthStore((s) => s.walletAddress);
@@ -39,14 +36,6 @@ export default function WalletPage() {
       clearInterval(interval);
     };
   }, [connectedWalletAddress]);
-
-  const { data: transactions, isLoading: txLoading } = useQuery({
-    queryKey: ["connected-wallet-transactions", connectedWalletAddress],
-    queryFn: () => getUsdcTransferHistory(connectedWalletAddress!),
-    enabled: !!connectedWalletAddress,
-    refetchInterval: 20000,
-    retry: false,
-  });
 
   return (
     <div className="pb-24 px-4 md:px-6 pt-8 max-w-2xl mx-auto">
@@ -88,27 +77,15 @@ export default function WalletPage() {
         </div>
       )}
 
-      <div className="flex items-center justify-between mt-8 mb-4">
-        <h2 className="text-xl font-bold">Your Transactions</h2>
-        <Link href="/activity" className="text-sm text-primary hover:underline">
-          Why was I charged? →
-        </Link>
-      </div>
-
-      {!connectedWalletAddress ? (
-        <p className="text-sm text-muted-foreground">
-          Connect your wallet to see your own transaction history.
-        </p>
-      ) : txLoading || !transactions ? (
-        <div className="flex flex-col gap-2">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-16 rounded-xl bg-card/50 animate-pulse" />
-          ))}
+      {connectedWalletAddress && (
+        <div className="rounded-2xl bg-card/50 p-6 text-center">
+          <p className="text-sm text-muted-foreground mb-3">
+            See every autonomous charge and why the agent made each decision.
+          </p>
+          <Link href="/activity" className="text-primary font-medium hover:underline">
+            View Agent Activity Log →
+          </Link>
         </div>
-      ) : transactions.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No transactions yet.</p>
-      ) : (
-        <TransactionList transactions={transactions} />
       )}
     </div>
   );
